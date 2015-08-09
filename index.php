@@ -48,7 +48,7 @@ function slab_router_fire($slab) {
 	$result = $dispatcher->dispatch($request, $routes);
 
 	if($result[0] !== $dispatcher::FOUND) {
-		die('404');
+		return; // don't die, just let WordPress continue
 	}
 
 	$route = $result[1];
@@ -57,7 +57,32 @@ function slab_router_fire($slab) {
 		$request->attributes->set($result[2]);
 	}
 
-	_var_dump($route);
+	$callbacks = $route[1];
+	$response = null;
+	$fired = false;
+
+	$fireFn = function() use($request, &$callbacks, &$response, &$fireFn) {
+
+		$callback = array_shift($callbacks);
+
+		$fired = false;
+
+		$nextFn = function() use(&$response, &$fired, &$fireFn) {
+			$fired = true;
+			return $fireFn();
+		};
+
+		$response = $callback->__invoke($request, $nextFn);
+
+		if(is_null($response) and $fired === false) {
+			$response = $next();
+		}
+
+		return $response;
+
+	};
+
+	echo $fireFn($callbacks);
 	die();
 
 }
