@@ -29,10 +29,10 @@ function slab_router_init($slab) {
 
 	$slab->autoloader->registerNamespace('Slab\Router', SLAB_ROUTER_DIR . 'src');
 
-	$router = new Slab\Router\RouteCollection;
+	$routes = new Slab\Router\RouteCollection;
 
-	$slab->singleton('Slab\Router\RouteCollection', $router);
-	$slab->alias('router', 'Slab\Router\RouteCollection');
+	$slab->singleton('Slab\Router\RouteCollection', $routes);
+	$slab->alias('router', 'Slab\Router\RouteCollection'); // alias as router, not routes
 
 }
 
@@ -40,49 +40,16 @@ function slab_router_init($slab) {
 // Fire
 function slab_router_fire($slab) {
 
-	$dispatcher = new Slab\Router\RouteDispatcher;
+	$router = $slab->make('Slab\Router\Router');
 
-	$request = $slab->request;
-	$routes = $slab->router;
+	$response = $router->execute($slab->make('router'), $slab->make('request'));
 
-	$result = $dispatcher->dispatch($request, $routes);
-
-	if($result[0] !== $dispatcher::FOUND) {
-		return; // don't die, just let WordPress continue
+	if($response instanceof Slab\Core\Http\ResponseInterface) {
+		$response->serve();
+	} else {
+		echo $response;
 	}
 
-	$route = $result[1];
-
-	if(!empty($result[2])) {
-		$request->attributes->set($result[2]);
-	}
-
-	$callbacks = $route[1];
-	$response = null;
-	$fired = false;
-
-	$fireFn = function() use($request, &$callbacks, &$response, &$fireFn) {
-
-		$callback = array_shift($callbacks);
-
-		$fired = false;
-
-		$nextFn = function() use(&$response, &$fired, &$fireFn) {
-			$fired = true;
-			return $fireFn();
-		};
-
-		$response = $callback->__invoke($request, $nextFn);
-
-		if(is_null($response) and $fired === false) {
-			$response = $next();
-		}
-
-		return $response;
-
-	};
-
-	echo $fireFn($callbacks);
 	die();
 
 }
