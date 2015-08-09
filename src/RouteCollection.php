@@ -37,12 +37,13 @@ class RouteCollection {
 	 * Add a GET route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function get($path, $args) {
+	public function get($path) {
 
-		$this->on('GET', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('GET', $path, $callbacks);
 
 	}
 
@@ -52,12 +53,13 @@ class RouteCollection {
 	 * Add a POST route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function post($path, $args) {
+	public function post($path) {
 
-		$this->on('POST', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('POST', $path, $callbacks);
 
 	}
 
@@ -67,12 +69,13 @@ class RouteCollection {
 	 * Add a PUT route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function put($path, $args) {
+	public function put($path) {
 
-		$this->on('PUT', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('PUT', $path, $callbacks);
 
 	}
 
@@ -82,12 +85,13 @@ class RouteCollection {
 	 * Add a DELETE route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function delete($path, $args) {
+	public function delete($path) {
 
-		$this->on('DELETE', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('DELETE', $path, $callbacks);
 
 	}
 
@@ -97,12 +101,13 @@ class RouteCollection {
 	 * Add a HEAD route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function head($path, $args) {
+	public function head($path) {
 
-		$this->on('HEAD', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('HEAD', $path, $callbacks);
 
 	}
 
@@ -112,28 +117,13 @@ class RouteCollection {
 	 * Add an OPTIONS route
 	 *
 	 * @param string Path
-	 * @param mixed Args
 	 * @return void
 	 **/
-	public function options($path, $args) {
+	public function options($path) {
 
-		$this->on('OPTIONS', $path, $args);
-
-	}
-
-
-
-	/**
-	 * Add a combined GET and POST route
-	 *
-	 * @param string Path
-	 * @param mixed Args
-	 * @return void
-	 **/
-	public function any($path, $args) {
-
-		$this->on('GET', $path, $args);
-		$this->on('POST', $path, $args);
+		$callbacks = func_get_args();
+		array_shift($callbacks);
+		$this->addRoute('OPTIONS', $path, $callbacks);
 
 	}
 
@@ -144,10 +134,10 @@ class RouteCollection {
 	 *
 	 * @param string Method
 	 * @param string Path
-	 * @param mixed Args
+	 * @param array Callbacks
 	 * @return void
 	 **/
-	public function on($method, $path, $args) {
+	public function addRoute($method, $path, array $callbacks) {
 
 		$method = strtoupper($method);
 
@@ -157,7 +147,7 @@ class RouteCollection {
 
 		$path = trim($path, '/');
 
-		$i = array_push($this->routes[$method], [$path, $args]);
+		$i = array_push($this->routes[$method], [$path, $callbacks]);
 		$this->routes['*'][] = [$method, $path, $i - 1];
 
 	}
