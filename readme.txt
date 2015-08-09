@@ -33,7 +33,7 @@ No screenshots are available.
 == Changelog ==
 
 = 1.0.0 (2015-08-08) =
-* V2 public release
+* V1 public release
 
 
 == Upgrade Notice ==
