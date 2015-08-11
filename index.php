@@ -44,6 +44,10 @@ function slab_router_fire($slab) {
 
 	$response = $router->execute($slab->make('router'), $slab->make('request'));
 
+	if($response === null) {
+		return;
+	}
+
 	if($response instanceof Slab\Core\Http\ResponseInterface) {
 		$response->serve();
 	} else {
