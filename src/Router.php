@@ -2,6 +2,8 @@
 
 namespace Slab\Router;
 
+use RuntimeException;
+
 use Slab\Core\Http\RequestInterface;
 
 /**
@@ -98,10 +100,20 @@ class Router {
 				return $callFn();
 			};
 
-			$response = $callback->__invoke($this->request, $nextFn);
+			if(is_a($callback, 'Closure')) {
+				$response = $callback->__invoke($this->request, $nextFn);
+			} else {
+				$parts = explode('@', $callback, 2);
+				if(empty($parts[1])) {
+					throw new RuntimeException("Callback must include action part: $callback");
+				}
+				$obj = slab($parts[0]);
+				$method = $parts[1];
+				$response = call_user_func_array([$obj, $method], $this->request->attributes->all());
+			}
 
-			if(is_null($response) and $fired === false) {
-				$response = $next();
+			if($response === null and $fired === false) {
+				$response = $nextFn();
 			}
 
 			return $response;
