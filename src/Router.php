@@ -4,6 +4,7 @@ namespace Slab\Router;
 
 use RuntimeException;
 
+use Slab\Core\Container;
 use Slab\Core\Http\RequestInterface;
 
 /**
@@ -16,6 +17,12 @@ class Router {
 
 
 	/**
+	 * @var Slab\Core\Container
+	 **/
+	protected $container;
+
+
+	/**
 	 * @var Slab\Core\Http\RequestInterface
 	 **/
 	protected $request;
@@ -25,6 +32,20 @@ class Router {
 	 * @var Slab\Router\RouteCollection
 	 **/
 	protected $routes;
+
+
+	/**
+	 * Constructor
+	 *
+	 * @param Slab\Core\Container
+	 * @return void
+	 **/
+	public function __construct(Container $container) {
+
+		$this->container = $container;
+
+	}
+
 
 
 	/**
@@ -61,15 +82,15 @@ class Router {
 
 		$result = $dispatcher->dispatch($this->request, $this->routes);
 
-		if($result[0] !== $dispatcher::FOUND) {
+		if($result['status'] !== $dispatcher::FOUND) {
 			return null;
 		}
 
-		if(!empty($result[2])) {
-			$this->request->attributes->set($result[2]);
+		if(!empty($result['params'])) {
+			$this->request->attributes->set($result['params']);
 		}
 
-		return $result[1];
+		return $result['route'];
 
 	}
 
@@ -83,44 +104,22 @@ class Router {
 	 **/
 	protected function executeRoute(array $route) {
 
-		if(empty($route[1])) {
+		if(empty($route['handler'])) {
 			return null;
 		}
 
-		$callbacks = $route[1];
-		$response = null;
+		$callback = $route['handler'];
 
-		$callFn = function() use(&$callbacks, &$response, &$callFn) {
+		if(is_a($callback, 'Closure')) {
+			return $callback->__invoke($this->request);
+		} elseif(strpos($callback, '@') !== false) {
+			return $this->container->makeMethod($callback);
+			return 'app-dispatcher';
+		} elseif(is_callable($callback)) {
+			return call_user_func($callback, $this->request);
+		}
 
-			$callback = array_shift($callbacks);
-			$fired = false;
-
-			$nextFn = function() use(&$response, &$fired, &$callFn) {
-				$fired = true;
-				return $callFn();
-			};
-
-			if(is_a($callback, 'Closure')) {
-				$response = $callback->__invoke($this->request, $nextFn);
-			} else {
-				$parts = explode('@', $callback, 2);
-				if(empty($parts[1])) {
-					throw new RuntimeException("Callback must include action part: $callback");
-				}
-				$obj = slab($parts[0]);
-				$method = $parts[1];
-				$response = call_user_func_array([$obj, $method], $this->request->attributes->all());
-			}
-
-			if($response === null and $fired === false) {
-				$response = $nextFn();
-			}
-
-			return $response;
-
-		};
-
-		return $callFn($callbacks);
+		throw new RuntimeException('Unable to execute route handler');
 
 	}
 
