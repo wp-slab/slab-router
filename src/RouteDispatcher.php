@@ -39,7 +39,7 @@ class RouteDispatcher {
 		$routes = $collection->getRoutes($method);
 
 		if(empty($routes)) {
-			return [static::NOT_FOUND];
+			return ['status' => static::NOT_FOUND];
 		}
 
 		$path = trim($request->getPath(), '/');
@@ -49,12 +49,12 @@ class RouteDispatcher {
 			$match = $this->match($path, $route);
 
 			if($match !== false) {
-				return [static::FOUND, $route, $match];
+				return ['status' => static::FOUND, 'route' => $route, 'params' => $match];
 			}
 
 		}
 
-		return [static::NOT_FOUND];
+		return ['status' => static::NOT_FOUND];
 
 	}
 
@@ -69,14 +69,12 @@ class RouteDispatcher {
 	 **/
 	public function match($path, array $route) {
 
-		// _var_dump($path, $route[0], $route[0] === $path);
-		// _print_r($route);
-
-		if($route[0] === $path) {
+		if($route['path'] === $path) {
 			return null;
 		}
 
-		// @todo regex
+		// @todo handle regex params
+		// @todo extract params
 
 		return false;
 

@@ -37,13 +37,12 @@ class RouteCollection {
 	 * Add a GET route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function get($path) {
+	public function get($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('GET', $path, $callbacks);
+		$this->addRoute('GET', $path, $handler);
 
 	}
 
@@ -53,13 +52,12 @@ class RouteCollection {
 	 * Add a POST route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function post($path) {
+	public function post($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('POST', $path, $callbacks);
+		$this->addRoute('POST', $path, $handler);
 
 	}
 
@@ -69,13 +67,12 @@ class RouteCollection {
 	 * Add a PUT route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function put($path) {
+	public function put($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('PUT', $path, $callbacks);
+		$this->addRoute('PUT', $path, $handler);
 
 	}
 
@@ -85,13 +82,12 @@ class RouteCollection {
 	 * Add a DELETE route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function delete($path) {
+	public function delete($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('DELETE', $path, $callbacks);
+		$this->addRoute('DELETE', $path, $handler);
 
 	}
 
@@ -101,13 +97,12 @@ class RouteCollection {
 	 * Add a HEAD route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function head($path) {
+	public function head($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('HEAD', $path, $callbacks);
+		$this->addRoute('HEAD', $path, $handler);
 
 	}
 
@@ -117,13 +112,12 @@ class RouteCollection {
 	 * Add an OPTIONS route
 	 *
 	 * @param string Path
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function options($path) {
+	public function options($path, $handler) {
 
-		$callbacks = func_get_args();
-		array_shift($callbacks);
-		$this->addRoute('OPTIONS', $path, $callbacks);
+		$this->addRoute('OPTIONS', $path, $handler);
 
 	}
 
@@ -134,10 +128,10 @@ class RouteCollection {
 	 *
 	 * @param string Method
 	 * @param string Path
-	 * @param array Callbacks
+	 * @param mixed Handler
 	 * @return void
 	 **/
-	public function addRoute($method, $path, array $callbacks) {
+	public function addRoute($method, $path, $handler) {
 
 		$method = strtoupper($method);
 
@@ -147,8 +141,16 @@ class RouteCollection {
 
 		$path = trim($path, '/');
 
-		$i = array_push($this->routes[$method], [$path, $callbacks]);
-		$this->routes['*'][] = [$method, $path, $i - 1];
+		$i = array_push($this->routes[$method], [
+			'path'    => $path,
+			'handler' => $handler,
+		]);
+
+		$this->routes['*'][] = [
+			'method' => $method,
+			'index'  => $i - 1,
+			'path'   => $path,
+		];
 
 	}
 
@@ -165,7 +167,7 @@ class RouteCollection {
 			return array_key_exists($method, $this->routes) ? $this->routes[$method] : [];
 		}
 
-		return []; // @todo
+		return []; // @todo get all routes
 
 	}
 
