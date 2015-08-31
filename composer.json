@@ -1,0 +1,18 @@
+{
+	"name": "wp-slab/slab-router",
+	"description": "The Slab Router component.",
+	"type": "wordpress-plugin",
+	"license": "MIT",
+	"keywords": ["slab", "wordpress"],
+	"homepage": "http://www.wp-slab.com/components/router",
+	"authors": [{
+		"name": "Luke Lanchester",
+		"email": "luke@lukelanchester.com",
+		"homepage": "http://hybridlogic.co.uk"
+	}],
+	"require": {
+		"php": ">=5.5.9",
+		"composer/installers": "~1.0.12",
+		"wp-slab/slab-core": "dev-master"
+	}
+}
