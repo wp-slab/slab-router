@@ -60,12 +60,12 @@ class Router {
 		$this->request = $request;
 		$this->routes  = $routes;
 
-		$route = $this->findRoute();
-		if(!$route) {
+		$result = $this->findRoute();
+		if(!$result) {
 			return null; // don't die, just let WordPress continue
 		}
 
-		return $this->executeRoute($route);
+		return $this->executeRoute($result['route'], $result['params']);
 
 	}
 
@@ -86,11 +86,13 @@ class Router {
 			return null;
 		}
 
-		if(!empty($result['params'])) {
-			$this->request->attributes->set($result['params']);
-		}
+		// if(!empty($result['params'])) {
+		// 	$this->request->attributes->set($result['params']);
+		// }
 
-		return $result['route'];
+		// return $result['route'];
+
+		return $result;
 
 	}
 
@@ -100,9 +102,10 @@ class Router {
 	 * Execute the middleware controllers on the given route
 	 *
 	 * @param array Route
+	 * @param array Params
 	 * @return mixed Response
 	 **/
-	protected function executeRoute(array $route) {
+	protected function executeRoute(array $route, array $params) {
 
 		if(empty($route['handler'])) {
 			return null;
@@ -111,12 +114,11 @@ class Router {
 		$callback = $route['handler'];
 
 		if(is_a($callback, 'Closure')) {
-			return $callback->__invoke($this->request);
+			return empty($params) ? $callback->__invoke() : call_user_func_array($callback, $params);
 		} elseif(strpos($callback, '@') !== false) {
-			return $this->container->makeMethod($callback);
-			return 'app-dispatcher';
+			return $this->container->makeMethod($callback, $params);
 		} elseif(is_callable($callback)) {
-			return call_user_func($callback, $this->request);
+			return empty($params) ? call_user_func($callback) : call_user_func_array($callback, $params);
 		}
 
 		throw new RuntimeException('Unable to execute route handler');

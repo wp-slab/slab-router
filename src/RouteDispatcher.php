@@ -70,7 +70,7 @@ class RouteDispatcher {
 	public function match($path, array $route) {
 
 		if($route['path'] === $path) {
-			return null;
+			return [];
 		}
 
 		if(strpos($route['path'], '{') === false) {
@@ -105,7 +105,7 @@ class RouteDispatcher {
 		$pattern = preg_replace_callback('|{(?<key>[^}]+)}|',
 			function($matches) use(&$keys) {
 				$keys[$matches['key']] = null;
-				return "(?<{$matches['key']}>[a-z0-9-_]+)";
+				return "(?<{$matches['key']}>[a-zA-Z0-9-_]+)";
 			},
 			$pattern
 		);
