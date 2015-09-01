@@ -4,7 +4,7 @@ namespace Slab\Router;
 
 use RuntimeException;
 
-use Slab\Core\Container;
+use Slab\Core\Application;
 use Slab\Core\Http\RequestInterface;
 
 /**
@@ -17,7 +17,7 @@ class Router {
 
 
 	/**
-	 * @var Slab\Core\Container
+	 * @var Slab\Core\Application
 	 **/
 	protected $container;
 
@@ -37,10 +37,10 @@ class Router {
 	/**
 	 * Constructor
 	 *
-	 * @param Slab\Core\Container
+	 * @param Slab\Core\Application
 	 * @return void
 	 **/
-	public function __construct(Container $container) {
+	public function __construct(Application $container) {
 
 		$this->container = $container;
 
@@ -74,7 +74,7 @@ class Router {
 	/**
 	 * Find the route that matches the current request
 	 *
-	 * @return array Route
+	 * @return array Result
 	 **/
 	public function findRoute() {
 
@@ -89,8 +89,6 @@ class Router {
 		// if(!empty($result['params'])) {
 		// 	$this->request->attributes->set($result['params']);
 		// }
-
-		// return $result['route'];
 
 		return $result;
 
@@ -114,7 +112,7 @@ class Router {
 		$callback = $route['handler'];
 
 		if(is_a($callback, 'Closure')) {
-			return empty($params) ? $callback->__invoke() : call_user_func_array($callback, $params);
+			return $this->container->resolveMethod($callback, null, $params);
 		} elseif(strpos($callback, '@') !== false) {
 			return $this->container->makeMethod($callback, $params);
 		} elseif(is_callable($callback)) {
