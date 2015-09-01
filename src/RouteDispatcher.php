@@ -73,10 +73,47 @@ class RouteDispatcher {
 			return null;
 		}
 
-		// @todo handle regex params
-		// @todo extract params
+		if(strpos($route['path'], '{') === false) {
+			return false;
+		}
 
-		return false;
+		$matches = [];
+		list($pattern, $keys) = $this->compilePattern($route['path']);
+		$match = preg_match($pattern, $path, $matches);
+
+		if($match !== 1) {
+			return false;
+		}
+
+		return array_intersect_key($matches, $keys);
+
+	}
+
+
+
+	/**
+	 * Convert a path into a regex pattern
+	 *
+	 * @param string Path
+	 * @return array [Regex pattern, keys]
+	 **/
+	public function compilePattern($path) {
+
+		$pattern = "|^$path$|";
+		$keys = [];
+
+		$pattern = preg_replace_callback('|{(?<key>[^}]+)}|',
+			function($matches) use(&$keys) {
+				$keys[$matches['key']] = null;
+				return "(?<{$matches['key']}>[a-z0-9-_]+)";
+			},
+			$pattern
+		);
+
+		// @todo optional params
+		// @todo override regex pattern
+
+		return [$pattern, $keys];
 
 	}
 
