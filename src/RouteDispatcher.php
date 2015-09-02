@@ -26,6 +26,12 @@ class RouteDispatcher {
 
 
 	/**
+	 * @var string Default regex for params
+	 **/
+	protected $default_regex = '[a-zA-Z0-9-_]+';
+
+
+	/**
 	 * Dispatch a request against a collection of routes
 	 *
 	 * @param Slab\Core\Http\RequestInterface
@@ -115,8 +121,13 @@ class RouteDispatcher {
 				$is_optional = false;
 			}
 
+			if(strpos($key, ':') !== false) {
+				list($key, $regex) = explode(':', $key, 2);
+			} else {
+				$regex = $this->default_regex;
+			}
+
 			$keys[$key] = null;
-			$regex = '[a-zA-Z0-9-_]+';
 			$pattern = "(?<$key>$regex)";
 
 			if($is_optional) {
@@ -135,8 +146,6 @@ class RouteDispatcher {
 		};
 
 		$pattern = preg_replace_callback('|/?{(?<key>[^}]+)}|', $patterFn, $pattern);
-
-		// @todo override regex pattern
 
 		return [$pattern, $keys];
 
