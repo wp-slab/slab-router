@@ -107,8 +107,9 @@ class RouteDispatcher {
 
 		$pattern = "|^$path$|";
 		$keys = [];
+		$has_optional_before = false;
 
-		$patterFn = function($matches) use(&$keys) {
+		$patterFn = function($matches) use(&$keys, &$has_optional_before) {
 
 			$key = $matches['key'];
 
@@ -117,8 +118,10 @@ class RouteDispatcher {
 			if(substr($key, -1) === '?') {
 				$key = substr($key, 0, -1);
 				$is_optional = true;
+				$has_optional_before = true;
 			} else {
-				$is_optional = false;
+				// @todo closing optional parentheses must be after all other patterns
+				$is_optional = $has_optional_before;
 			}
 
 			if(strpos($key, ':') !== false) {
