@@ -31,15 +31,15 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 * @dataProvider routesProvider
 	 **/
-	public function testAddRoute($method, $path, $handler, $group, $path_out) {
+	public function testAddRoute($method, $path, $handler, $test_group, $test_path) {
 
 		$collection = new RouteCollection;
 
 		$collection->$method($path, $handler);
 
-		$routes = $collection->getRoutes($group);
+		$test_routes = $collection->getRoutes($test_group);
 
-		$this->assertEquals([['path' => $path_out, 'handler' => $handler]], $routes);
+		$this->assertEquals([['path' => $test_path, 'handler' => $handler]], $test_routes);
 
 	}
 
@@ -57,9 +57,9 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase {
 		$tests = [];
 
 		foreach($routes as $route) {
-			list($method, $path, $handler, $group, $path_out) = $route;
+			list($method, $path, $handler, $test_group, $test_path) = $route;
 			$collection->$method($path, $handler);
-			$tests[$group][] = ['path' => $path_out, 'handler' => $handler];
+			$tests[$test_group][] = ['path' => $test_path, 'handler' => $handler];
 		}
 
 		foreach($tests as $group => $test) {
