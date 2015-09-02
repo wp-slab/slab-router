@@ -23,18 +23,6 @@ class Router {
 
 
 	/**
-	 * @var Slab\Core\Http\RequestInterface
-	 **/
-	protected $request;
-
-
-	/**
-	 * @var Slab\Router\RouteCollection
-	 **/
-	protected $routes;
-
-
-	/**
 	 * Constructor
 	 *
 	 * @param Slab\Core\Application
@@ -57,12 +45,13 @@ class Router {
 	 **/
 	public function execute(RouteCollection $routes, RequestInterface $request) {
 
-		$this->request = $request;
-		$this->routes  = $routes;
-
-		$result = $this->findRoute();
+		$result = $this->findRoute($routes, $request);
 		if(!$result) {
 			return null; // don't die, just let WordPress continue
+		}
+
+		if(!empty($result['params'])) {
+			$request->attributes->set($result['params']);
 		}
 
 		return $this->executeRoute($result['route'], $result['params']);
@@ -74,21 +63,19 @@ class Router {
 	/**
 	 * Find the route that matches the current request
 	 *
+	 * @param Slab\Router\RouteCollection
+	 * @param Slab\Core\Http\RequestInterface
 	 * @return array Result
 	 **/
-	public function findRoute() {
+	public function findRoute(RouteCollection $routes, RequestInterface $request) {
 
 		$dispatcher = new RouteDispatcher;
 
-		$result = $dispatcher->dispatch($this->request, $this->routes);
+		$result = $dispatcher->dispatch($request, $routes);
 
 		if($result['status'] !== $dispatcher::FOUND) {
 			return null;
 		}
-
-		// if(!empty($result['params'])) {
-		// 	$this->request->attributes->set($result['params']);
-		// }
 
 		return $result;
 
