@@ -54,7 +54,7 @@ class Router {
 			$request->attributes->set($result['params']);
 		}
 
-		return $this->executeRoute($result['route'], $result['params']);
+		return $this->callRoute($result['route'], $result['params']);
 
 	}
 
@@ -90,7 +90,7 @@ class Router {
 	 * @param array Params
 	 * @return mixed Response
 	 **/
-	protected function executeRoute(array $route, array $params) {
+	public function callRoute(array $route, array $params) {
 
 		if(empty($route['handler'])) {
 			return null;
