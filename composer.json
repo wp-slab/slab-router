@@ -18,5 +18,10 @@
 	"require-dev": {
 		"phpunit/phpunit": "4.8.*",
 		"mockery/mockery": "0.9.*"
+	},
+	"extra": {
+		"installer-paths": {
+			"vendor/wp-slab/{$name}/": ["type:wordpress-plugin"]
+		}
 	}
 }
