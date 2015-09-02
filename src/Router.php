@@ -99,7 +99,7 @@ class Router {
 		$callback = $route['handler'];
 
 		if(is_a($callback, 'Closure')) {
-			return $this->container->resolveMethod($callback, null, $params);
+			return $this->container->fireMethod($callback, null, $params);
 		} elseif(strpos($callback, '@') !== false) {
 			return $this->container->makeMethod($callback, $params);
 		} elseif(is_callable($callback)) {

@@ -39,7 +39,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		$closure = function(){};
 
 		$container = m::mock('Slab\Core\Application');
-		$container->shouldReceive('resolveMethod')->with($closure, null, ['slug' => 'bar'])->once()->andReturn('response');
+		$container->shouldReceive('fireMethod')->with($closure, null, ['slug' => 'bar'])->once()->andReturn('response');
 
 		$routes = m::mock('Slab\Router\RouteCollection');
 		$routes->shouldReceive('getRoutes')->with('POST')->once()->andReturn([
@@ -182,7 +182,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		$closure = function(){};
 
 		$container = m::mock('Slab\Core\Application');
-		$container->shouldReceive('resolveMethod')->with($closure, null, [])->once()->andReturn('response');
+		$container->shouldReceive('fireMethod')->with($closure, null, [])->once()->andReturn('response');
 
 		$router = new Router($container);
 
