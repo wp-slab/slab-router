@@ -40,6 +40,10 @@ function slab_router_init($slab) {
 // Fire
 function slab_router_fire($slab) {
 
+	if(defined('SLAB_CLI_BOOT')) {
+		return;
+	}
+
 	$router = $slab->make('Slab\Router\Router');
 
 	$response = $router->execute($slab->make('router'), $slab->make('request'));
