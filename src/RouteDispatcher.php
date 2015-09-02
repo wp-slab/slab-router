@@ -102,15 +102,40 @@ class RouteDispatcher {
 		$pattern = "|^$path$|";
 		$keys = [];
 
-		$pattern = preg_replace_callback('|{(?<key>[^}]+)}|',
-			function($matches) use(&$keys) {
-				$keys[$matches['key']] = null;
-				return "(?<{$matches['key']}>[a-zA-Z0-9-_]+)";
-			},
-			$pattern
-		);
+		$patterFn = function($matches) use(&$keys) {
 
-		// @todo optional params
+			$key = $matches['key'];
+
+			$has_slash = ($matches[0][0] === '/');
+
+			if(substr($key, -1) === '?') {
+				$key = substr($key, 0, -1);
+				$is_optional = true;
+			} else {
+				$is_optional = false;
+			}
+
+			$keys[$key] = null;
+			$regex = '[a-zA-Z0-9-_]+';
+			$pattern = "(?<$key>$regex)";
+
+			if($is_optional) {
+				if($has_slash) {
+					return "(/$pattern)?";
+				} else {
+					return "$pattern?";
+				}
+			} elseif($has_slash) {
+				return "/$pattern";
+			} else {
+				return $pattern;
+			}
+
+
+		};
+
+		$pattern = preg_replace_callback('|/?{(?<key>[^}]+)}|', $patterFn, $pattern);
+
 		// @todo override regex pattern
 
 		return [$pattern, $keys];
