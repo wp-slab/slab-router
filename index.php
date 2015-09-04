@@ -31,7 +31,7 @@ function slab_router_init($slab) {
 
 	$slab->singleton('Slab\Router\RouteCollection', function(){
 		$routes = new Slab\Router\RouteCollection;
-		do_action('slab_routes', $routes);
+		do_action('slab_router_routes', $routes);
 		return $routes;
 	});
 	$slab->alias('router', 'Slab\Router\RouteCollection'); // alias as router, not routes
