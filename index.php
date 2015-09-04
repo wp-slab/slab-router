@@ -19,47 +19,10 @@ define('SLAB_ROUTER_DIR', plugin_dir_path(__FILE__));
 define('SLAB_ROUTER_URL', plugin_dir_url(__FILE__));
 
 
+// Includes
+include SLAB_ROUTER_DIR . 'functions.php';
+
+
 // Hooks
-add_action('slab_init', 'slab_router_init');
-add_action('slab_loaded', 'slab_router_fire', 20);
-
-
-// Init
-function slab_router_init($slab) {
-
-	$slab->autoloader->registerNamespace('Slab\Router', SLAB_ROUTER_DIR . 'src');
-
-	$slab->singleton('Slab\Router\RouteCollection', function(){
-		$routes = new Slab\Router\RouteCollection;
-		do_action('slab_router_routes', $routes);
-		return $routes;
-	});
-	$slab->alias('router', 'Slab\Router\RouteCollection'); // alias as router, not routes
-
-}
-
-
-// Fire
-function slab_router_fire($slab) {
-
-	if(defined('SLAB_CLI_BOOT')) {
-		return;
-	}
-
-	$router = $slab->make('Slab\Router\Router');
-
-	$response = $router->execute($slab->make('router'), $slab->make('request'));
-
-	if($response === null) {
-		return;
-	}
-
-	if($response instanceof Slab\Core\Http\ResponseInterface) {
-		$response->serve();
-	} else {
-		echo $response;
-	}
-
-	die();
-
-}
+add_action('slab_init', 'Slab\Router\slab_router_init');
+add_action('slab_loaded', 'Slab\Router\slab_router_fire', 20);
