@@ -51,7 +51,7 @@ class Router {
 		}
 
 		if(!empty($result['params'])) {
-			$request->attributes->set($result['params']);
+			$request->attributes->add($result['params']);
 		}
 
 		return $this->callRoute($result['route'], $result['params']);

@@ -12,7 +12,7 @@ use Slab\Core\Http\ResponseInterface;
  **/
 function slab_router_init($slab) {
 
-	$slab->autoloader->registerNamespace('Slab\Router', SLAB_ROUTER_DIR . 'src');
+	// $slab->autoloader->registerNamespace('Slab\Router', SLAB_ROUTER_DIR . 'src');
 
 	$slab->singleton('Slab\Router\RouteCollection', function(){
 		$routes = new RouteCollection;
