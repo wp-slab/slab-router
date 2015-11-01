@@ -41,7 +41,7 @@ class RouteDispatcher {
 	public function dispatch(RequestInterface $request, RouteCollection $collection) {
 
 		$method = $request->getMethod();
-		$path   = $request->getPathInfo();
+		$path   = $request->getPath();
 		$routes = $collection->getRoutes($method);
 
 		$dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) use($method, $routes) {
