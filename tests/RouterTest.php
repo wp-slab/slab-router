@@ -52,8 +52,8 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 		$request->shouldReceive('getMethod')->once()->andReturn('POST');
 		$request->shouldReceive('getPath')->once()->andReturn('foo/bar');
 
-		$request->attributes = m::mock('Slab\Core\Http\Collection\AttributeCollection');
-		$request->attributes->shouldReceive('set')->with(['slug' => 'bar'])->once()->andReturn(null);
+		$request->attributes = m::mock('Symfony\Component\HttpFoundation\ParameterBag');
+		$request->attributes->shouldReceive('add')->with(['slug' => 'bar'])->once()->andReturn(null);
 
 		$router = new Router($container);
 
@@ -79,6 +79,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 
 		$request = m::mock('Slab\Core\Http\RequestInterface');
 		$request->shouldReceive('getMethod')->once()->andReturn('GET');
+		$request->shouldReceive('getPath')->once()->andReturn('foo/bar');
 
 		$router = new Router($container);
 
