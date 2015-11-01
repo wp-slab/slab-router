@@ -36,9 +36,11 @@ function slab_router_fire($slab) {
 		return;
 	}
 
-	$router = $slab->make('Slab\Router\Router');
+	$router  = $slab->make('Slab\Router\Router');
+	$routes  = $slab->make('router');
+	$request = $slab->make('request');
 
-	$response = $router->execute($slab->make('router'), $slab->make('request'));
+	$response = $router->execute($routes, $request);
 
 	if($response === null) {
 		return;
