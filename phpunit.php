@@ -1,8 +1,13 @@
 <?php
 
-include 'vendor/autoload.php';
-include 'vendor/wp-slab/slab-core/src/Autoloader.php';
+$files = [
+	'./vendor/autoload.php',
+	'../../../vendor/autoload.php',
+];
 
-$autoloader = new Slab\Core\Autoloader;
-$autoloader->registerNamespace('Slab\Core', 'vendor/wp-slab/slab-core/src');
-$autoloader->registerNamespace('Slab\Router', __DIR__ . '/src');
+foreach($files as $file) {
+	if(is_file($file)) {
+		include $file;
+		break;
+	}
+}
